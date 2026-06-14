@@ -1,6 +1,8 @@
 # Đồ Án 2: Khai thác Tập Phổ Biến — FP-Growth\*
 **Môn:** CSC14004 — Khai thác Dữ liệu và Ứng dụng &nbsp;|&nbsp; **Ngôn ngữ:** Julia ($\ge$ 1.9)
 
+Đường link data: https://drive.google.com/drive/folders/1pVvpa0ARdabJHTsQdCaqdO4C0wDKVv1e
+
 ## Thành viên nhóm
 
 | Họ và tên | MSSV | Phân công |
@@ -116,7 +118,7 @@ FP-Growth* correctness |   10     10  0.3s
 
 ```text
 ================================================================================
-  MUC 4(a): DOI CHIEU FP-Growth* vs SPMF
+DOI CHIEU FP-Growth* vs SPMF
 ================================================================================
 
 [1] CSDL nho / vi du tay:
