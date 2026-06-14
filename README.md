@@ -1,125 +1,70 @@
-# Đồ Án 2: Khai thác Tập Phổ Biến (Frequent Itemset Mining)
-**Thuật toán:** FP-Growth* **Ngôn ngữ triển khai:** Julia ($\ge 1.9$)
+# Đồ Án 2: Khai thác Tập Phổ Biến — FP-Growth\*
+**Môn:** CSC14004 — Khai thác Dữ liệu và Ứng dụng &nbsp;|&nbsp; **Ngôn ngữ:** Julia ($\ge$ 1.9)
 
-## 1. Giới thiệu Bài toán
-Khai thác tập phổ biến (FIM) là cốt lõi của các hệ thống khai phá dữ liệu như phân tích giỏ hàng (Market Basket Analysis). Mục tiêu là tìm ra các tập hợp phần tử (itemsets) xuất hiện cùng nhau trong một cơ sở dữ liệu giao dịch với tần suất lớn hơn hoặc bằng một ngưỡng cho trước gọi là **Độ hỗ trợ tối thiểu** ($min\_sup$).
+## Thành viên nhóm
 
-## 2. Nền tảng Thuật toán
+| Họ và tên | MSSV | Phân công |
+|-----------|------|-----------|
+|           |      |           |
+|           |      |           |
+|           |      |           |
 
-### 2.1. FP-Growth (Frequent Pattern Growth)
-Được đề xuất bởi Han et al. (2000), FP-Growth giải quyết nút thắt cổ chai lớn nhất của thuật toán Apriori trước đó: **Phải sinh ra một lượng khổng lồ các tập ứng viên**. 
+## Cài đặt môi trường
 
-**Cơ chế hoạt động:**
-1. Thuật toán nén toàn bộ cơ sở dữ liệu thành một cấu trúc cây tiền tố gọi là **FP-Tree**, chỉ lưu giữ những mặt hàng phổ biến.
-2. Từ FP-Tree, nó trích xuất các **cơ sở mẫu điều kiện (Conditional Pattern Base)** cho từng mặt hàng (bắt đầu từ mặt hàng ít phổ biến nhất).
-3. Thuật toán tiếp tục xây dựng các **cây điều kiện (Conditional FP-Tree)** nhỏ hơn từ các cơ sở mẫu này và gọi đệ quy để tìm ra tất cả các tập phổ biến.
-
-*Nhược điểm:* Việc liên tục phải duyệt dữ liệu hai lần (một lần để đếm, một lần để tạo cây) và cấp phát bộ nhớ cho hàng loạt cây điều kiện con khiến FP-Growth truyền thống tiêu tốn nhiều tài nguyên khi dữ liệu thưa thớt hoặc ngưỡng $min\_sup$ quá nhỏ.
-
-### 2.2. FP-Growth* (Bản Tối ưu hóa)
-Được đề xuất bởi Grahne & Zhu (2003), FP-Growth* là phiên bản cải tiến trực tiếp nhằm tối ưu hóa quá trình đệ quy khai phá dữ liệu.
-
-**Điểm khác biệt cốt lõi (Array-based Technique):**
-Thay vì phải quét các cơ sở mẫu điều kiện hai lần như thuật toán gốc, FP-Growth* sử dụng cấu trúc mảng (hoặc bảng băm - Hash Table) ngay trong bộ nhớ để đếm và lưu vết tần suất của các item. 
-- Nhờ việc đếm trực tiếp này, thuật toán loại bỏ hoàn toàn bước quét lặp lại. 
-- Các tập phổ biến mới có thể được sinh ra ngay lập tức từ dữ liệu mảng mà không cần phải thực sự xây dựng cấu trúc node vật lý của cây điều kiện trong một số trường hợp, giúp giảm đáng kể chi phí cấp phát bộ nhớ và thời gian CPU.
-
-## 3. Cấu trúc Dự Án
-
-```text
-itemset/
-├── README.md                    # Tài liệu hướng dẫn & Lý thuyết
-├── Project.toml                 # Môi trường & dependency (Julia)
-├── src/
-│   ├── FPGrowthStar.jl          # Module gói toàn bộ cài đặt (điểm vào của package)
-│   ├── structures.jl            # Cấu trúc dữ liệu: FPNode, HeaderEntry, FPTree
-│   ├── utils.jl                 # Hàm phụ trợ (đọc/ghi SPMF, in cây, kiểm thử)
-│   ├── rules.jl                 # Sinh luật kết hợp (Chương 5: Market Basket Analysis)
-│   ├── main.jl                  # CLI: julia src/main.jl <input> <minsup> [output]
-│   └── algorithm/
-│       └── fpgrowth_star.jl     # Thuật toán nhóm chọn: FP-Growth* (array-based)
-├── test/
-│   ├── runtests.jl              # Bộ unit test chính thức, brute-force (julia --project test/runtests.jl)
-│   ├── test_correctness.jl      # Mục 4(a): đối chiếu #itemset & support với SPMF (100% khớp)
-│   ├── test_correctness_image.jl # Bản in PASS/FAIL (brute-force) để chụp ảnh báo cáo
-│   ├── test_benchmark.jl        # Đo thời gian/bộ nhớ FP-Growth*, xuất CSV (mục 4 b,c,e)
-│   ├── spmf.jl                  # Tiện ích gọi SPMF (cần Java ≥ 21 + SPMF/spmf.jar)
-│   ├── test_benchmark_spmf.jl   # Mục 4(b,d): so thời gian & bộ nhớ với SPMF
-│   ├── test_txnlen.jl           # Mục 4(f): ảnh hưởng độ dài giao dịch (CSDL tổng hợp)
-│   ├── test_rules.jl            # Mục 5: luật kết hợp trên Retail (Market Basket)
-│   └── plot_results.py          # Vẽ đồ thị từ results/*.csv (Python + matplotlib)
-├── data/
-│   ├── toy/                     # CSDL nhỏ cho ví dụ tay (có sẵn)
-│   └── benchmark/               # CSDL benchmark (tự tải, xem mục 4)
-├── results/                     # CSV số liệu thực nghiệm (tự sinh khi chạy)
-├── SPMF/                        # spmf.jar (công cụ tham chiếu — không commit nếu >25MB)
-├── notebooks/
-│   └── demo.ipynb               # Jupyter Notebook demo
-└── docs/                        # Báo cáo PDF
-```
-
-## 4. Môi trường & Cách chạy
-
-**Yêu cầu:** Julia ≥ 1.9. Không cần cài thêm package ngoài (chỉ dùng stdlib: `Printf`, `Random`, `Test`).
+- **Julia $\ge$ 1.9** (bắt buộc). Chỉ dùng thư viện chuẩn `Printf`, `Random`, `Test` — **không** cần package ngoài.
+- *(Tùy chọn)* Phần đối chiếu/đo với **SPMF** cần **Java $\ge$ 21** và `SPMF/spmf.jar` (bản release tải từ trang tác giả).
+- *(Tùy chọn)* Vẽ đồ thị cần **Python + matplotlib** (`pip install matplotlib`).
 
 ```bash
-# (Tùy chọn) cài đặt môi trường lần đầu
+# Cài đặt môi trường Julia (lần đầu)
 julia --project -e 'using Pkg; Pkg.instantiate()'
-
-# Khai phá tập phổ biến — minsup là số nguyên (tuyệt đối) HOẶC số thực trong (0,1] (tương đối)
-julia src/main.jl data/toy/example1.txt 3
-julia src/main.jl data/toy/example2.txt 0.5 out.txt    # ghi kết quả ra file
-
-# Chạy bộ kiểm thử tự động (phải PASS toàn bộ)
-julia --project test/runtests.jl
-#   hoặc: julia --project -e 'using Pkg; Pkg.test()'
-
-# Bản in PASS/FAIL dễ đọc (brute-force, để chụp màn hình cho báo cáo)
-julia --project test/test_correctness_image.jl
-
-# Benchmark hiệu năng (cần đặt dataset vào data/benchmark/, nếu thiếu sẽ tự SKIP)
-julia --project test/test_benchmark.jl
 ```
 
-### Thực nghiệm Chương 4 (đối chiếu & đo với SPMF)
+## Cách chạy & ví dụ sử dụng
 
-Cần **Java ≥ 21** và `SPMF/spmf.jar` (bản release tải từ trang tác giả). Kết quả ghi vào `results/*.csv` để vẽ đồ thị.
-
+### 1) Khai phá tập phổ biến (CLI)
 ```bash
-# (a) Đối chiếu tính đúng đắn với SPMF (#itemset & support) — phải 100% khớp
-julia --project test/test_correctness.jl
-
-# (b,d) So thời gian & bộ nhớ với SPMF (xuất results/compare_time.csv, compare_memory.csv)
-julia --project test/test_benchmark_spmf.jl
-#   chỉ chạy lại phần bộ nhớ:  ONLY_MEM=1 julia --project test/test_benchmark_spmf.jl
-
-# (c,e) Số itemset & thời gian theo minsup + scalability (xuất results/benchmark_*.csv)
-julia --project test/test_benchmark.jl
-
-# (f) Ảnh hưởng độ dài giao dịch (CSDL tổng hợp có seed → results/txnlen.csv)
-julia --project test/test_txnlen.jl
-
-# Vẽ đồ thị từ tất cả CSV → results/plot_*.png  (cần: pip install matplotlib)
-python test/plot_results.py
+# Cú pháp: julia src/main.jl <input_file> <minsup> [output_file]
+#   minsup: số nguyên (tuyệt đối) HOẶC số thực trong (0,1] (tương đối)
+julia src/main.jl data/toy/example1.txt 3                 # minsup tuyệt đối = 3
+julia src/main.jl data/benchmark/chess.txt 0.8 out.txt    # minsup 80%, ghi ra file
 ```
+**Định dạng vào/ra (SPMF):** mỗi dòng input là một giao dịch gồm các item (số nguyên dương) cách nhau bởi khoảng trắng; dòng trống và dòng bắt đầu bằng `#` bị bỏ qua. Output có dạng `1 2 3 #SUP: <support>`.
 
-### Ứng dụng Chương 5 — Market Basket Analysis
-
+### 2) Kiểm thử
 ```bash
-# Sinh luật kết hợp từ frequent itemset trên Retail → results/rules_retail.csv
-julia --project test/test_rules.jl
+julia --project test/runtests.jl                # unit test tự động (đối chiếu brute-force)
+julia --project test/test_correctness.jl        # đối chiếu SPMF: #itemset & support (cần Java 21)
+julia --project test/test_correctness_image.jl  # bản in PASS/FAIL dễ đọc
 ```
 
-**Định dạng vào/ra (SPMF):** mỗi dòng input là một giao dịch gồm các item (số nguyên dương)
-cách nhau bởi khoảng trắng; dòng trống và dòng bắt đầu bằng `#` bị bỏ qua. Output có dạng
-`<item1> <item2> ... #SUP: <support>`.
+### 3) Thực nghiệm & đồ thị
+```bash
+julia --project test/test_benchmark.jl          # thời gian / #itemset / scalability -> results/*.csv
+julia --project test/test_benchmark_spmf.jl     # so thời gian & bộ nhớ với SPMF
+julia --project test/test_txnlen.jl             # ảnh hưởng độ dài giao dịch
+julia --project test/test_rules.jl              # luật kết hợp (Market Basket) trên Retail
+python test/plot_results.py                     # vẽ đồ thị từ CSV -> results/plot_*.png
+```
 
-> **Dữ liệu benchmark:** Chess, Mushroom, Retail, Accidents, T10I4D100K — tải từ
-> [SPMF Datasets](https://www.philippe-fournier-viger.com/spmf/index.php?link=datasets.php)
-> hoặc [FIMI Repository](http://fimi.uantwerpen.be/data/), đặt vào `data/benchmark/`
-> với tên `chess.txt`, `mushroom.txt`, `retail.txt`, `accidents.txt`, `T10I4D100K.txt`.
+## Cấu trúc thư mục
+```text
+├── src/                # Cài đặt thuật toán
+│   ├── FPGrowthStar.jl  #   module gói toàn bộ (điểm vào)
+│   ├── structures.jl    #   FPNode, HeaderEntry, FPTree
+│   ├── utils.jl         #   đọc/ghi SPMF, in cây
+│   ├── rules.jl         #   sinh luật kết hợp
+│   ├── main.jl          #   CLI
+│   └── algorithm/fpgrowth_star.jl
+├── test/               # Unit test, benchmark, vẽ đồ thị
+├── data/  (toy/, benchmark/)   # CSDL ví dụ tay & benchmark
+├── results/            # Số liệu CSV + đồ thị PNG (sinh khi chạy test)
+├── notebooks/demo.ipynb
+└── docs/               # Báo cáo PDF
+```
+*Dữ liệu benchmark (chess, mushroom, retail, accidents) nguồn từ [SPMF Datasets](https://www.philippe-fournier-viger.com/spmf/index.php?link=datasets.php) / [FIMI Repository](http://fimi.uantwerpen.be/data/).*
 
-## 5. Kết quả chạy test (lần chạy cuối)
+## Kết quả chạy test (lần chạy cuối)
 
 _Môi trường: Julia 1.12.6, Windows; SPMF chạy bằng JDK 21. Ngày chạy: 2026-06-14._
 

@@ -6,9 +6,6 @@ SPMF/
 # De bai goc
 docs/CSC14004-Data-Mining-P2-Updated.pdf
 
-# Du lieu benchmark lon (>25MB -> Google Drive, xem README)
-data/benchmark/accidents.txt
-
 # Cau hinh editor / agent
 .vscode/
 .claude/
