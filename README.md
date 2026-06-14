@@ -5,14 +5,14 @@
 
 | Họ và tên | MSSV | Phân công |
 |-----------|------|-----------|
-| Nguyễn Văn Linh  |  23122003    |           |
-| Trần Chấn Hiệp   |  23122022    |           |
-| Nguyễn Thị Mỹ Kim | 23122040    |           |
+| Nguyễn Văn Linh  |  23122003    |   Cài đặt thuật toán + Report     |
+| Trần Chấn Hiệp   |  23122022    |  Phân tích thuật toán + Report       |
+| Nguyễn Thị Mỹ Kim | 23122040    |  Chạy benchmark, Ứng dụng + Report     |
 
 ## Cài đặt môi trường
 
-- **Julia $\ge$ 1.9** (bắt buộc). Chỉ dùng thư viện chuẩn `Printf`, `Random`, `Test` — **không** cần package ngoài.
-- *(Tùy chọn)* Phần đối chiếu/đo với **SPMF** cần **Java $\ge$ 21** và `SPMF/spmf.jar` (bản release tải từ trang tác giả).
+- **Julia $\ge$ 1.9**.
+-  **Java $\ge$ 21**.
 - *(Tùy chọn)* Vẽ đồ thị cần **Python + matplotlib** (`pip install matplotlib`).
 
 ```bash
@@ -34,8 +34,23 @@ julia src/main.jl data/benchmark/chess.txt 0.8 out.txt    # minsup 80%, ghi ra f
 ### 2) Kiểm thử
 ```bash
 julia --project test/runtests.jl                # unit test tự động (đối chiếu brute-force)
-julia --project test/test_correctness.jl        # đối chiếu SPMF: #itemset & support (cần Java 21)
+julia --project test/test_correctness.jl        # đối chiếu SPMF: #itemset & support 
 julia --project test/test_correctness_image.jl  # bản in PASS/FAIL dễ đọc
+```
+
+Bộ test đối chiếu **7 CSDL** (gồm các CSDL ví dụ tay) với thuật toán vét cạn và SPMF — định nghĩa trong `test/runtests.jl`:
+
+```julia
+# Mỗi case: (tên, transactions, minsup)
+const CASES = [
+    ("Ví dụ 1 cơ sở",            [[1,2,3],[1,2,4],[1,3,4],[2,3,4],[1,2,3,4],[1,3],[2,4]], 3),
+    ("Ví dụ 2 nhánh đơn",        [[1,2,3,4,5],[1,2,3,4],[1,2,3],[1,2],[1]],                1),
+    ("Han et al. 2000",          [[1,2,3,5,6],[1,2,3,4,5],[1,4],[2,4,6],[1,2,3,5,6]],      3),
+    ("Giao dịch giống nhau",     [[1,2,3],[1,2,3],[1,2,3]],                                2),
+    ("Không có 2-itemset",       [[1,2],[3,4],[5,6]],                                      2),
+    ("Một giao dịch",            [[1,2,3,4,5]],                                            1),
+    ("Item ID không liên tục",   [[10,20,30],[10,20],[10,30],[20,30]],                     2),
+]
 ```
 
 ### 3) Thực nghiệm & đồ thị
@@ -49,8 +64,8 @@ python test/plot_results.py                     # vẽ đồ thị từ CSV -> r
 
 ## Cấu trúc thư mục
 ```text
-├── src/                # Cài đặt thuật toán
-│   ├── FPGrowthStar.jl  #   module gói toàn bộ (điểm vào)
+├── src/                 # Cài đặt thuật toán
+│   ├── FPGrowthStar.jl  #   module gói toàn bộ 
 │   ├── structures.jl    #   FPNode, HeaderEntry, FPTree
 │   ├── utils.jl         #   đọc/ghi SPMF, in cây
 │   ├── rules.jl         #   sinh luật kết hợp
@@ -60,6 +75,7 @@ python test/plot_results.py                     # vẽ đồ thị từ CSV -> r
 ├── data/  (toy/, benchmark/)   # CSDL ví dụ tay & benchmark
 ├── results/            # Số liệu CSV + đồ thị PNG (sinh khi chạy test)
 ├── notebooks/demo.ipynb
+├── SPMF/spmf.jar       #bản release của tác giả để kiểm thử
 └── docs/               # Báo cáo PDF
 ```
 *Dữ liệu benchmark (chess, mushroom, retail, accidents) nguồn từ [SPMF Datasets](https://www.philippe-fournier-viger.com/spmf/index.php?link=datasets.php) / [FIMI Repository](http://fimi.uantwerpen.be/data/).*

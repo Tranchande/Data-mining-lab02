@@ -1,22 +1,7 @@
-# test/runtests.jl
-# Bộ kiểm thử tự động chính thức.
-#
-# Chạy:
-#   julia --project test/runtests.jl
-# hoặc:
-#   julia --project -e 'using Pkg; Pkg.test()'
-#
-# Kiểm tra tính đúng đắn của FP-Growth* bằng cách so sánh với
-# brute-force (ground truth) trên các CSDL nhỏ.
-
 include(joinpath(@__DIR__, "..", "src", "FPGrowthStar.jl"))
 using .FPGrowthStar
 using Test
-
-# ------------------------------------------------------------------
-# Brute-force FIM: liệt kê mọi tập con và đếm support.
-# Chỉ dùng được với số item nhỏ (<= 20) — làm "ground truth".
-# ------------------------------------------------------------------
+#Brute-force để so sánh kết quả
 function brute_force_fim(transactions::Vector{Vector{Int}},
                          minsup::Int)::Vector{Tuple{Vector{Int},Int}}
     all_items = sort(unique(vcat(transactions...)))

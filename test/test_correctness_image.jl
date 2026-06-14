@@ -1,18 +1,14 @@
 # test/test_correctness_image.jl
 # Bản in kết quả PASS/FAIL dễ đọc (dùng để chụp màn hình minh họa cho báo cáo),
-# đối chiếu FP-Growth* với brute-force trên các CSDL nhỏ.
-# Kiểm thử "chính thức" (không phụ thuộc SPMF) dùng test/runtests.jl với macro @test.
-# Đối chiếu với SPMF (mục 3.4.2a) dùng test/test_correctness.jl.
-#
+
 # Chạy: julia --project test/test_correctness_image.jl
 
 include(joinpath(@__DIR__, "..", "src", "FPGrowthStar.jl"))
 using .FPGrowthStar
 
-# ------------------------------------------------------------------
-# Brute-force FIM: liệt kê mọi tập con và đếm support (ground truth)
-# Chỉ dùng được với |items| <= 20
-# ------------------------------------------------------------------
+
+# Brute-force FIM
+
 function brute_force_fim(transactions::Vector{Vector{Int}},
                           minsup::Int)::Vector{Tuple{Vector{Int},Int}}
     all_items = sort(unique(vcat(transactions...)))
@@ -57,12 +53,12 @@ println("=" ^ 55)
 
 pass = 0; total = 0
 
-# Test 1: Vi du co ban (Chapter 2.1)
+
 total += 1
 t1 = [[1,2,3],[1,2,4],[1,3,4],[2,3,4],[1,2,3,4],[1,3],[2,4]]
 pass += run_test("Vi du 1 co ban (minsup=3)", t1, 3) ? 1 : 0
 
-# Test 2: Nhanh don (Chapter 2.2) - 2^5-1 = 31 itemsets
+
 total += 1
 t2  = [[1,2,3,4,5],[1,2,3,4],[1,2,3],[1,2],[1]]
 bf2 = normalize(brute_force_fim(t2, 1))

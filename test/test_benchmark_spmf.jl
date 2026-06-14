@@ -1,20 +1,7 @@
-# test/test_benchmark_spmf.jl
-# MUC 3.4.2(b) + (d): So sanh FP-Growth* voi SPMF ve THOI GIAN va BO NHO.
-# (d2: dung SPMF lam moc so sanh thay cho "ban co ban").
-#
 # Xuat:
 #   results/compare_time.csv    (dataset, minsup_pct, n_itemsets, time_mine_ms, time_spmf_ms)
 #   results/compare_memory.csv  (dataset, minsup_pct, n_itemsets, peak_mine_mb, peak_spmf_mb)
-#
-# - Thoi gian: cua minh do bang @elapsed (chi thuat toan); cua SPMF lay tu
-#   thong ke SPMF tu in (cung chi thuat toan, khong tinh khoi dong JVM).
-# - Bo nho: cua minh do peak RSS bang Sys.maxrss() trong tien trinh con rieng;
-#   cua SPMF lay "Max memory usage" SPMF tu bao. Luu y: RSS cua Julia gom
-#   ~150MB runtime nen so cua minh co nen cao hon doi chut.
-#
 # Chay: julia --project test/test_benchmark_spmf.jl
-# Yeu cau: Java >= 21 + SPMF/spmf.jar.
-
 include(joinpath(@__DIR__, "..", "src", "FPGrowthStar.jl"))
 using .FPGrowthStar
 include(joinpath(@__DIR__, "spmf.jl"))
@@ -27,8 +14,6 @@ const MODULE_JL  = abspath(joinpath(@__DIR__, "..", "src", "FPGrowthStar.jl"))
 const TIME_ROWS = NamedTuple[]
 const MEM_ROWS  = NamedTuple[]
 
-# Do peak RSS (MB) trong tien trinh Julia rieng (Sys.maxrss).
-# do_mine=false: chi nap module + doc data (baseline) de tru phan runtime+DB.
 function mine_peak_mb(file::String, ms_abs::Int; do_mine::Bool=true)::Float64
     work = do_mine ? "fpgrowth_star(t, $ms_abs)" : "t"
     code = """
@@ -42,7 +27,6 @@ function mine_peak_mb(file::String, ms_abs::Int; do_mine::Bool=true)::Float64
     return m === nothing ? NaN : parse(Float64, m.captures[1])
 end
 
-# So sanh THOI GIAN + dem itemset o nhieu muc minsup (muc b)
 function compare_time(name::String, file::String, levels::Vector{Float64})
     isfile(file) || (println("\n[SKIP] $name (chua co $file)"); return)
     t = read_spmf(file); n = length(t)
@@ -66,10 +50,7 @@ function compare_time(name::String, file::String, levels::Vector{Float64})
     rm(out; force=true)
 end
 
-# So sanh BO NHO o 1 muc minsup trung binh (muc d)
-#   peak_mine = RSS dinh khi mining (gom ~150MB runtime Julia + DB)
-#   base_mine = RSS dinh khi chi nap module + doc DB (chua mining)
-#   net_mine  = peak - base  (phan bo nho rieng cho khai pha)
+# So sanh BO NHO o 1 muc minsup trung binh 
 function compare_memory(name::String, file::String, rel::Float64)
     isfile(file) || return
     t = read_spmf(file); n = length(t)
@@ -109,14 +90,14 @@ datasets = [
 const ONLY_MEM = haskey(ENV, "ONLY_MEM")
 
 if !ONLY_MEM
-    println("MUC 4(b): SO SANH THOI GIAN  (Java: ", JAVA_BIN, ")")
+    println(" SO SANH THOI GIAN  (Java: ", JAVA_BIN, ")")
     for (name, file, levels, _) in datasets
         compare_time(name, file, levels)
     end
 end
 
 println("\n" * "=" ^ 64)
-println("MUC 4(d): SO SANH BO NHO (peak) o minsup trung binh")
+println( " SO SANH BO NHO (peak) o minsup trung binh")
 println("=" ^ 64)
 for (name, file, _, rel_mem) in datasets
     compare_memory(name, file, rel_mem)
@@ -126,4 +107,4 @@ println("\n" * "=" ^ 64)
 isdir(RESULT_DIR) || mkdir(RESULT_DIR)
 ONLY_MEM || write_csv(joinpath(RESULT_DIR, "compare_time.csv"), TIME_ROWS)
 write_csv(joinpath(RESULT_DIR, "compare_memory.csv"), MEM_ROWS)
-println("\nHoan tat so sanh voi SPMF.")
+println("\nHoan tat so sanh")

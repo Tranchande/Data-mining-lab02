@@ -1,14 +1,4 @@
-# test/spmf.jl
-# Tien ich goi SPMF (cong cu tham chieu cua tac gia) de doi chieu ket qua
-# va hieu nang voi cai dat FP-Growth* cua nhom.
-#
-# SPMF la cong cu Java; jar dat tai SPMF/spmf.jar (can Java >= 21).
-# Lenh: java -jar spmf.jar run FPGrowth_itemsets <in> <out> <minsup>%
-
-# ------------------------------------------------------------------
-# Tim Java >= 21 (jar SPMF moi can class version 21).
-# Uu tien bien moi truong JAVA21, roi cac thu muc JDK pho bien.
-# ------------------------------------------------------------------
+# yêu cầu java >=21. GỌi SPMF của tác giả để tham chiếu, 
 function find_java()::String
     haskey(ENV, "JAVA21") && isfile(ENV["JAVA21"]) && return ENV["JAVA21"]
     bases = [
@@ -30,10 +20,6 @@ end
 const JAVA_BIN = find_java()
 const SPMF_JAR = abspath(joinpath(@__DIR__, "..", "SPMF", "spmf.jar"))
 
-# ------------------------------------------------------------------
-# Doc file ket qua SPMF: moi dong "item1 item2 ... #SUP: count"
-# Tra ve Vector{(itemset, support)}.
-# ------------------------------------------------------------------
 function read_spmf_output(path::String)::Vector{Tuple{Vector{Int},Int}}
     res = Tuple{Vector{Int},Int}[]
     open(path, "r") do f
@@ -50,11 +36,6 @@ function read_spmf_output(path::String)::Vector{Tuple{Vector{Int},Int}}
     return res
 end
 
-# ------------------------------------------------------------------
-# Chay SPMF FPGrowth_itemsets tren mot file input co san.
-# Tra ve (itemsets, time_ms, mem_mb, count) — time/mem/count lay tu
-# thong ke ma SPMF tu in ra.
-# ------------------------------------------------------------------
 function run_spmf(input_file::String, output_file::String, minsup_pct::Float64)
     cmd = `$JAVA_BIN -jar $SPMF_JAR run FPGrowth_itemsets $input_file $output_file "$(minsup_pct)%"`
     statsf = tempname()
@@ -72,13 +53,6 @@ function run_spmf(input_file::String, output_file::String, minsup_pct::Float64)
     return itemsets, time_ms, mem_mb, count
 end
 
-# ------------------------------------------------------------------
-# Tien ich: chay SPMF tren tap giao dich (in-memory) voi minsup TUYET DOI k.
-# Tu dong quy doi sang phan tram sao cho nguong cua SPMF = k:
-#   SPMF dung nguong = ceil(pct/100 * n); chon pct = (k-0.5)/n*100
-#   => ceil(k-0.5) = k (on dinh, tranh lech lam tron o bien).
-# Tra ve tap chuan hoa Set{(sorted_itemset, support)}.
-# ------------------------------------------------------------------
 function spmf_fim(transactions::Vector{Vector{Int}}, minsup_abs::Int)
     n = length(transactions)
     pct = (minsup_abs - 0.5) / n * 100

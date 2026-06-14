@@ -1,14 +1,8 @@
 # test/test_benchmark.jl
-# Do hieu nang FP-Growth* tren cac benchmark dataset va XUAT CSV de ve do thi.
-#
 # Chay: julia --project test/test_benchmark.jl
-#
 # Ket qua in ra man hinh + ghi vao:
-#   results/benchmark_minsup.csv      (cho do thi b, c, d theo minsup)
-#   results/benchmark_scalability.csv (cho do thi e theo kich thuoc CSDL)
-#
-# Luu y: cac file benchmark (chess.txt, mushroom.txt, ...) phai duoc dat
-# trong data/benchmark/. Neu thieu, dataset tuong ung se bi SKIP.
+#   results/benchmark_minsup.csv     
+#   results/benchmark_scalability.csv 
 
 include(joinpath(@__DIR__, "..", "src", "FPGrowthStar.jl"))
 using .FPGrowthStar
@@ -16,25 +10,19 @@ using Printf
 
 const RESULT_DIR = joinpath(@__DIR__, "..", "results")
 
-# Cot du lieu tich luy de xuat CSV
+
 # (dataset, n_trans, minsup_pct, minsup_abs, n_itemsets, time_ms, alloc_mb)
 const MINSUP_ROWS = NamedTuple[]
 # (dataset, frac_pct, sub_n, minsup_abs, n_itemsets, time_ms)
 const SCAL_ROWS   = NamedTuple[]
 
-# ------------------------------------------------------------------
-# Chay mot ham, tra ve (ket_qua, time_ms, alloc_mb)
-# @timed do tong bo nho cap phat (allocations), khong phai peak RSS.
-# ------------------------------------------------------------------
 function run_timed(f::Function)
     GC.gc()
     t = @timed f()
     return t.value, t.time * 1000, t.bytes / 1024 / 1024
 end
 
-# ------------------------------------------------------------------
-# Do FP-Growth* tren mot tap du lieu o nhieu muc minsup
-# ------------------------------------------------------------------
+
 function benchmark(name::String, filepath::String,
                    minsup_levels::Vector{Float64})
     if !isfile(filepath)
@@ -60,10 +48,7 @@ function benchmark(name::String, filepath::String,
             time_ms=round(t_ms, digits=2), alloc_mb=round(m_mb, digits=3)))
     end
 end
-
-# ------------------------------------------------------------------
 # Scalability: do thoi gian theo % kich thuoc CSDL
-# ------------------------------------------------------------------
 function scalability_test(name::String, filepath::String, minsup_rel::Float64)
     if !isfile(filepath)
         println("\n[SKIP] Scalability $name - file khong ton tai")
@@ -89,10 +74,7 @@ function scalability_test(name::String, filepath::String, minsup_rel::Float64)
             minsup_abs=ms_abs, n_itemsets=length(res), time_ms=round(t_ms, digits=2)))
     end
 end
-
-# ------------------------------------------------------------------
 # Ghi danh sach NamedTuple ra CSV
-# ------------------------------------------------------------------
 function write_csv(path::String, rows::Vector{NamedTuple})
     isempty(rows) && return
     open(path, "w") do io
@@ -104,7 +86,6 @@ function write_csv(path::String, rows::Vector{NamedTuple})
     println("  -> Da ghi $(length(rows)) dong: $path")
 end
 
-# ==================================================================
 bench_dir = joinpath(@__DIR__, "..", "data", "benchmark")
 
 benchmark("Chess",

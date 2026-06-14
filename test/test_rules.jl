@@ -1,13 +1,5 @@
 # test/test_rules.jl
-# MUC 3.5 (Ung dung): Market Basket Analysis tren CSDL ban le (Retail).
-# Sinh luat ket hop tu frequent itemset cua FP-Growth* (cai dat cua nhom),
-# in top luat theo lift va xuat results/rules_retail.csv.
-#
 # Chay: julia --project test/test_rules.jl
-#
-# Luu y: item trong Retail la ID an danh (khong co ten san pham), nen "y nghia
-# kinh doanh" doc theo quan he thong ke (lift > 1: mua kem nhau hon ngau nhien).
-# Voi CSDL co ten (vd Groceries), chi can thay file la dien giai duoc san pham.
 
 include(joinpath(@__DIR__, "..", "src", "FPGrowthStar.jl"))
 using .FPGrowthStar

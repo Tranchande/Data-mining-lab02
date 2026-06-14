@@ -1,10 +1,4 @@
 # test/test_txnlen.jl
-# MUC 3.4.2(f): Anh huong cua DO DAI GIAO DICH TRUNG BINH den hieu nang.
-#
-# Sinh CSDL tong hop (co seed de tai lap): co dinh so giao dich va so item,
-# tang dan do dai moi giao dich. Giao dich cang dai -> FP-tree cang ram rap,
-# cang nhieu tap pho bien -> thoi gian tang.
-#
 # Xuat: results/txnlen.csv (avg_len, n_itemsets, time_ms)
 # Chay: julia --project test/test_txnlen.jl
 

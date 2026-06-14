@@ -1,11 +1,8 @@
 # --- Khong thuoc bai nop ---
 
 # Cong cu tham chieu cua tac gia (khong phai code nhom)
-SPMF/
 
 # De bai goc
-docs/CSC14004-Data-Mining-P2-Updated.pdf
-
 # Cau hinh editor / agent
 .vscode/
 .claude/

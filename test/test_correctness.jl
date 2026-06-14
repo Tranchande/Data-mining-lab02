@@ -1,13 +1,5 @@
 # test/test_correctness.jl
-# MUC 3.4.2(a): Kiem tra tinh dung dan cua FP-Growth* bang cach DOI CHIEU
-# truc tiep voi SPMF (cong cu tham chieu cua tac gia) tren cung input:
-# so sanh SO LUONG frequent itemset va SUPPORT cua tung itemset.
-#
-# Bao cao: ti le itemset khop hoan toan (ca itemset lan support).
-#
 # Chay: julia --project test/test_correctness.jl
-# Yeu cau: Java >= 21 + SPMF/spmf.jar (xem test/spmf.jl).
-#
 # (Bo unit test khong phu thuoc SPMF: test/runtests.jl - doi chieu brute-force.
 #  Ban in PASS/FAIL de doc: test/test_correctness_image.jl.)
 
@@ -69,7 +61,7 @@ for fn in ["example1.txt", "example2.txt", "example3.txt"]
 end
 
 # ---- 3) Benchmark that o minsup cao (chay nhanh) ----
-# (minsup_rel chon de so itemset vua phai -> SPMF xuat file khong qua lon)
+
 println("\n[3] Benchmark (doi chieu o minsup cao):")
 bench = [
     ("chess.txt",       0.80),
