@@ -1,0 +1,11 @@
+# Ví dụ 1 - Cơ bản (Chapter 2.1)
+# 7 giao dịch, 4 items (1..4), minsup = 3
+# Item frequencies: 1->5, 2->5, 3->5, 4->5
+# Expected frequent itemsets (minsup=3): 10 itemsets
+1 2 3
+1 2 4
+1 3 4
+2 3 4
+1 2 3 4
+1 3
+2 4

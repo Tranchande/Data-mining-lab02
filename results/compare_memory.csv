@@ -1,0 +1,5 @@
+dataset,minsup_pct,n_itemsets,peak_mine_mb,base_mine_mb,net_mine_mb,peak_spmf_mb
+Chess,0.8,8227,280.6,259.2,21.4,20.0
+Mushroom,0.3,2587,279.5,259.5,20.0,28.4
+Retail,0.01,159,317.5,265.3,52.2,134.4
+Accidents,0.7,529,607.8,554.6,53.2,127.5
