@@ -5,9 +5,9 @@
 
 | Họ và tên | MSSV | Phân công |
 |-----------|------|-----------|
-|           |      |           |
-|           |      |           |
-|           |      |           |
+| Nguyễn Văn Linh  |  23122003    |           |
+| Trần Chấn Hiệp   |  23122022    |           |
+| Nguyễn Thị Mỹ Kim | 23122040    |           |
 
 ## Cài đặt môi trường
 
@@ -66,7 +66,7 @@ python test/plot_results.py                     # vẽ đồ thị từ CSV -> r
 
 ## Kết quả chạy test (lần chạy cuối)
 
-_Môi trường: Julia 1.12.6, Windows; SPMF chạy bằng JDK 21. Ngày chạy: 2026-06-14._
+_Môi trường: Julia 1.12.6, Windows; SPMF chạy bằng JDK 21.
 
 ### Unit test tự động — `julia --project test/runtests.jl`
 
